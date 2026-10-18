@@ -2,13 +2,13 @@
 
 ## Current Development Status — October 18, 2026 (America/Chicago)
 
-- **Repository / branch:** `rerorriM-Mirrorer/BarFiller2` / `main`.
-- **Starting source checkpoint:** `BarFiller2_Complete_Install_Test2.zip` (SHA-256 `ed77a256fb3d3457bffa27e7a55d8de8641fd4bab386b28add39401fd86b1813`); code and assets carried forward from the complete package, with documentation updated for this repository.
+- **Repository / branch:** `rerorriM-Mirrorer/BarFiller2` / `dev/ctrl-drag-grid`.
+- **Starting source checkpoint:** `BarFiller2_CtrlDrag_Grid_Test3_Complete.zip` (SHA-256 `8aedddaaedd55206878a85feb0b4b547d05b9e635a92863ddfbc086612c28c8e`); code and assets carried forward from the complete package, with documentation updated for this repository.
 - **Runtime:** Windower 4 Lua addon; no external addon's files or DLL are required.
 - **Most recent user-confirmed live behavior:** Complete Install Test 2 successfully loaded for Franklet (2026-10-16); previously approved Test 12's EXP and level-up visuals were retained. This does NOT certify every animation/command on Franklet.
 - **Automation/static verification:** Packaging and content comparison against the source ZIP, syntax parsing, and source-level checks. These are not Windows/FFXI game tests.
-- **Remaining:** Ctrl+drag Test 3 needs live acceptance before promotion; representative zoning/relogin and long animation behavior also outstanding.
-- **Next:** Live-test the separate Ctrl+drag candidate and promote it only after approval..
+- **Remaining:** Live Ctrl+drag on both Ctrl keys, lock handling, boundary behavior, settings persistence and multibox interference.
+- **Next:** In-game test on Franklet and/or other characters, report any unexpected input behavior..
 
 ### Repository publication — October 18, 2026
 
@@ -19,6 +19,32 @@
 
 ---
 
+
+## Current testing batch — Ctrl+drag Grid Test 3 (2026-10-17)
+
+**Request / motivation:** Match EnemyBar2's Ctrl+drag alignment without modifying approved BarFiller Test 12 animations or the successful Complete Install Test 2. Explain common layout anchors vs individual drawn primitives to guide future addons.
+
+**Sources reviewed:** NPCMirror `AGENTS.md`, `WORKFLOW.md`, and `TESTING.md` on `rerorriM-Mirrorer/ffxi-NPCmirror@main`; EnemyBar2 `AGENTS.md`, `WORKFLOW.md`, `TESTING.md` on `rerorriM-Mirrorer/enemybar2@master`, plus the actual Ctrl/drag implementation on `underbar-glow-2026-10-17` (event codes 29/157, 10px floor grid, group translation); Windower `addons/libs/images.lua` mouse handler on `dev`; Complete Install Test 2 ZIP.
+
+**Changes:** Only `barfiller2.lua` runtime code changed: hold left/right Ctrl while dragging to snap the single widget anchor to a fixed screen-origin grid; default `DragGrid=10`; `//bf grid [positive whole pixels]`, help/status; viewport-aware snap fallback. All active animation modules, images, and underlying EXP handling unchanged. Added layout explanation and updated usage documentation. No data/settings shipped, preserving existing preferences.
+
+**Simulated checks:** All 6 bundled Lua modules parse with `texlua` (not strict Lua 5.1 verification). Executed the real BarFiller2 startup + keyboard callbacks, snap/free-drag paths, status, grid command, layout scale change and invalid grid rejection against stub Windower image/text and game APIs; **passed**. Boundary stress test: when a scaled widget cannot reach a requested snapped position, choose the last valid grid multiple in the screen instead of an off-grid clamp. File hash comparison confirmed **all 59 other original package files (including 5 other Lua modules, images and AGENTS/WORKFLOW guides) unchanged**; unit mock does not test actual Windower mouse dispatch ordering or native glyph rendering.
+
+**Live FFXI tests requested:**
+1. Back up working `addons/barfiller2/` and its `data/` settings. Unload `//lua u barfiller2` then replace files with complete Test 3 folder and `//lua l barfiller2`.
+2. Verify `//bf status` and `//bf grid` show `10`; `//bf grid 10` keeps the shared grid; `//bf help` documents controls.
+3. Drag normally (1px precision) and hold **left Ctrl** to snap to 10px screen-origin increments; release Ctrl and drag freely. Repeat with right Ctrl, including pressing both and releasing one.
+4. Test `//bf scale 1` and `//bf scale 2` (or smaller), various window sizes, viewport edges and saved positions across reload.
+5. Verify `//bf lock` disables drag and `//bf unlock` restores it. Confirm the original `//bf preview gain` and `//bf preview goldonly` still behave exactly like Test 2 and auto-hide/reveal is unaffected.
+6. Report if Windower's mouse handler behaves differently than the simulated images.lua callback order; Test 2 is rollback baseline.
+
+**Associated commit:** None; testing ZIP prepared locally and not pushed to a repository. BarFiller2 has no dedicated repository/working branch yet. This is *not* a GitHub-published testing batch; repository setup and a coherent commit remain pending.
+
+**Delivery:** `BarFiller2_CtrlDrag_Grid_Test3_Complete.zip` — full standalone installation for testing; no original BarFiller dependency.
+
+**User gameplay observations:** 2026-10-17: user confirmed Complete Install Test 2 works on Franklet; requested EnemyBar2-style Ctrl+drag snapping and an explanation of grid anchors and primitives. User observed that EnemyBar2 text and boundaries can drift relative to one another at different scales; no fix to EnemyBar2 was requested or made in this batch.
+
+---
 
 ## Current testing batch — Complete Install Test 2 (2026-10-16)
 

@@ -30,7 +30,7 @@
 ]]
 _addon.name='BarFiller2'
 _addon.author='Morath86; BarFiller2 additions: Awake'
-_addon.version='0.2.12-bf2-complete1'
+_addon.version='0.2.13-bf2-grid1'
 _addon.commands={'bf','bf2','barfiller2'}
 _addon.language='english'
 
@@ -53,7 +53,7 @@ defaults.TrustLayout={X=-1,Y=20,Width=420,Edit=true,Locked=false,Scale=1,
     LevelStyle='hybrid',ShowTNL=false,ShowRate=false,LevelDelay=0,GoldLabel=true,GainSparkles=true,LevelDigits='text',Test9DefaultsApplied=false,
     ArrivalFade=5.5,LevelRamp=2,LevelPresentation='goldonly',
     AutoHide=true,HideSeconds=60,JobBold=false,LevelFontSize=15,
-    ScaleProfile='compact',Test11DefaultsApplied=false,Test12DefaultsApplied=false}
+    ScaleProfile='compact',DragGrid=10,Test11DefaultsApplied=false,Test12DefaultsApplied=false}
 settings=config.load(defaults)
 settings.TrustSkin=settings.TrustSkin or {Color='gold'}
 settings.TrustLayout=settings.TrustLayout or {}
@@ -142,6 +142,8 @@ local preview_until=0
 local preview_state=nil
 local level_before_total=nil
 local pending_save=nil
+-- Keep left/right Ctrl independent: releasing one must not disable the other.
+local drag_snap_keys={[29]=false,[157]=false}
 local flash_previous={job=0,pct=0,level=0}
 local flash_drift={job=0,pct=0,level=0}
 
@@ -151,6 +153,18 @@ local function ui_dimensions()
     return tonumber(s.ui_x_res or s.x_res) or 800,tonumber(s.ui_y_res or s.y_res) or 600
 end
 local function bound(v,lower,upper) return math.max(lower,math.min(upper,v)) end
+-- A position grid is measured in screen/UI pixels, independent of widget scale.
+-- Floor rather than round to match EnemyBar2's 10px Ctrl+drag convention.
+local function snap_axis(pixel,grid,minimum,maximum)
+    -- Use a common screen-origin grid, but never snap outside the viewport.
+    -- A narrow window may have no valid grid multiple; then respect its edge.
+    local snapped=math.floor(bound(pixel,minimum,maximum)/grid)*grid
+    if snapped<minimum then
+        local first=math.ceil(minimum/grid)*grid
+        return first<=maximum and first or minimum
+    end
+    return snapped
+end
 local function nonnegative_finite(value)
     return type(value)=='number' and value==value and
         value~=math.huge and value~=-math.huge and value>=0
@@ -300,10 +314,19 @@ local function positioning()
         math.max(1,math.floor((tonumber(rested_size.Width) or 32)*scale+.5)),
         math.max(1,math.floor((tonumber(rested_size.Height) or 32)*scale+.5)))
 end
-local function arrange_at(nx,ny)
+local function arrange_at(nx,ny,snap)
     local res_x,res_y=ui_dimensions()
-    local new_x=bound(math.floor(nx+.5),0,math.max(0,res_x-width))
-    local new_y=bound(math.floor(ny+.5),13,math.max(13,res_y-52*scale))
+    local max_x=math.max(0,res_x-width)
+    local max_y=math.max(13,res_y-52*scale)
+    local new_x=bound(math.floor(nx+.5),0,max_x)
+    local new_y=bound(math.floor(ny+.5),13,max_y)
+    if snap then
+        local grid=tonumber(layout.DragGrid) or 10
+        if grid>=1 and grid==grid and grid<math.huge then
+            new_x=snap_axis(new_x,grid,0,max_x)
+            new_y=snap_axis(new_y,grid,13,max_y)
+        end
+    end
     layout.X,layout.Y=new_x,new_y
     positioning()
     pending_save=os.clock()+.6 -- save after movement settles, not every frame
@@ -322,7 +345,7 @@ local function set_edit(enabled)
     drag_text:draggable(false)
     labels_visible(ready)
     config.save(settings);pending_save=nil
-    say(layout.Edit and 'dragging ON; //bf move toggles it, //bf lock disables.'
+    say(layout.Edit and 'dragging ON; hold Ctrl for screen-grid snapping; //bf lock disables.'
                     or 'dragging OFF; position saved. //bf move to enable.')
 end
 -- Update the underlying character/level identity, independently from the
@@ -737,7 +760,7 @@ local function show_help()
     help_line('preview gain|goldonly|level|nogold', 'Preview without changing EXP')
     help_line('skin blue|gold', 'Choose the gauge color')
     help_line('scale <factor>', 'Resize; 1 = compact default')
-    help_line('move', 'Toggle dragging; lock disables it')
+    help_line('move', 'Toggle dragging; hold Ctrl for grid snapping')
     help_line('autohide on|off|<seconds>', 'Idle visibility timer')
     help_line('gainfade <seconds>', 'White arrival fade; default 5.5')
     help_line('restart / unload', 'Reload or unload BarFiller2')
@@ -754,6 +777,7 @@ local function show_full_help()
     windower.add_to_chat(0, ('Additional commands'):color(167))
     help_line('show / hide / auto', 'Reveal, hide or resume timed visibility')
     help_line('lock / unlock / pos reset', 'Position controls')
+    help_line('grid [pixels]', 'Ctrl+drag snap grid; default 10px')
     help_line('width <px> / scaleprofile compact|legacy', 'Sizing options')
     help_line('details [tnl|rate] [on|off]', 'Extra EXP readouts')
     help_line('leveldigits text|native / levelsize <points>', 'Level number typography')
@@ -781,6 +805,7 @@ local function show_status()
         tonumber(layout.ArrivalFade) or 0,tonumber(layout.LevelRamp) or 0,
         layout.AutoHide and 'on' or 'off',tonumber(layout.HideSeconds) or 60,
         elapsed,x,y))
+    say(('Ctrl+drag grid: %d screen pixels (//bf grid <pixels>)'):format(layout.DragGrid))
 end
 local function reveal_bar()
     manually_hidden=false
@@ -842,6 +867,16 @@ windower.register_event('addon command',function(command,...)
             positioning();config.save(settings)
             say('position reset to top-center.')
         else say('position '..tostring(x)..', '..tostring(y)..' (//bf pos reset)') end
+    elseif c=='grid' then
+        local value=a[1] and tonumber(a[1]) or nil
+        if a[1] then
+            if not nonnegative_finite(value) or value<1 or value~=math.floor(value) then
+                say('grid expects a positive whole number of screen pixels (//bf grid 10).');return
+            end
+            layout.DragGrid=value
+            config.save(settings)
+        end
+        say(('Ctrl+drag grid: %dpx, anchored at screen 0,0 (//bf grid 10)'):format(layout.DragGrid))
     elseif c=='width' then
         local w=tonumber(a[1])
         if w then
@@ -996,6 +1031,11 @@ windower.register_event('incoming chunk',function(id,original,modified,injected,
         end
     end
 end)
+-- EnemyBar2 uses Windower DirectInput codes 29/157 (left/right Ctrl).
+-- No custom mouse hook: images.lua already handles drag capture for the gauge.
+windower.register_event('keyboard',function(dik,down)
+    if dik==29 or dik==157 then drag_snap_keys[dik]=down and true or false end
+end)
 windower.register_event('prerender',function()
     if not ready then return end
     -- In edit mode, read the primitive that images.lua has already moved,
@@ -1003,7 +1043,14 @@ windower.register_event('prerender',function()
     if layout.Edit then
         local dx=gauge.middle:pos_x()-(x+math.floor(8*scale+.5))
         local dy=gauge.middle:pos_y()-y
-        if dx~=0 or dy~=0 then arrange_at(x+dx,y+dy) end
+        if dx~=0 or dy~=0 then
+            -- images.lua owns mouse capture and gives us the new image position.
+            -- Translate its motion into one parent-widget anchor; with Ctrl,
+            -- quantize that anchor to the same absolute grid as EnemyBar2.
+            -- All child primitives continue to derive positions from x/y/scale.
+            local snap=drag_snap_keys[29] or drag_snap_keys[157]
+            arrange_at(x+dx,y+dy,snap)
+        end
     end
     local now=os.clock()
     if pending_save and now>pending_save then
