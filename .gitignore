@@ -1,0 +1,5 @@
+/data/
+/settings.xml
+*.log
+.DS_Store
+Thumbs.db

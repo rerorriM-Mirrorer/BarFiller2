@@ -1,2 +1,72 @@
 # BarFiller2
-A
+
+**Current repository status:** Complete Install Test 2 (user-confirmed load on Franklet; Test 12 animations previously user-approved). The Ctrl+drag candidate is on `dev/ctrl-drag-grid` awaiting live testing. See [`TESTING.md`](TESTING.md) for detailed verification and history.
+
+A self-contained, independently installable Windower fork of BarFiller with animated EXP fills, trailing sparkles, golden level-up echoes, auto-hide, saved positioning, and adjustable timing. Built collaboratively with A, based on original BarFiller by Morath86.
+
+**This package fixes the incomplete Rename Test 1 installation. The approved Test 12 animations and active artwork remain unchanged.**
+
+## Complete installation (no migration required)
+
+1. Back up your previously working `Windower/addons/barfiller/` or `barfiller2/` directory and any existing settings before changing files.
+2. In-game, unload the old addon with **`//lua u barfiller`** (if running). Also unload an older BarFiller2 before replacing its files: `//lua u barfiller2`.
+3. Extract the **entire `barfiller2/` folder** from this ZIP into **`Windower/addons/`**. The main file must be `Windower/addons/barfiller2/barfiller2.lua`, with `statics.lua`, `bar_bg.png`, `bar_fg.png`, `moon.png`, `assets/`, `WORKFLOW.md`, and `TESTING.md` alongside it. Do **not** nest the folder inside `addons/barfiller/`.
+4. Enter **`//lua l barfiller2`** in Windower (not `//load barfiller2`, which asks Windower to find a DLL plugin).
+5. Type `//bf status` or `//bf preview gain`. The addon creates its own settings on first load; no `.cmd`, PowerShell script, internet download, or existing BarFiller installation is required.
+6. When successful, update AddonManager/autoload profiles to load **barfiller2** instead of **barfiller**. Do not load both: both claim the `//bf` alias.
+
+**Existing settings:** If you're upgrading an already-installed BarFiller2, leave its `data` folder and `settings.xml` untouched when extracting. The ZIP includes neither of these. If you specifically want to import preferences from the old original BarFiller, optionally copy its `data` tree and any `settings.xml` into `barfiller2` *after backing up both*, while avoiding overwriting any newer BarFiller2 settings. Imported stock image paths are redirected to BarFiller2's own folder.
+
+**Rollback:** `//lua u barfiller2`, then `//lua l barfiller`; the old addon and its settings were never altered by this installation.
+
+**What is bundled:** All required Lua modules, native and Trust-style art, the genuine original `moon.png`, and self-contained stock-compatible EXP logic and legacy image resources. The old background and foreground PNGs are lightweight compatible substitutes for two *hidden* legacy primitives; the visible custom gold/blue gauge and its assets are byte-for-byte unchanged from Test 12. Windower's standard Lua libraries (`config`, `files`, `packets`, `texts`, `images`, `chat`) are still provided by Windower itself, not this addon.
+
+## Controls
+
+| Command | Behavior |
+|---|---|
+| `//bf` | Reveals the auto-hidden bar and prints a concise command reminder; does **not** restart EXP motion |
+| `//bf help` | Complete chat-only colored command guide |
+| `//bf status` | Version, mode/visibility, job/level, position, skin, scale, timing, and main toggles |
+| `//bf show` | Refreshes visibility without resetting EXP |
+| `//bf hide` | Manually hides the bar until `//bf` or `//bf show` |
+| `//bf auto` | Restores automatic timed visibility |
+| `//bf restart` / `//bf reload` | Reinitializes **BarFiller2** by reloading the addon |
+| `//bf unload` | Unloads **BarFiller2** |
+| `//bf skin gold` / `blue` | Selects bar skin; gold default |
+| `//bf preview gain` / `goldonly` / `level` / `nogold` | Run previews without modifying EXP |
+| `//bf gainfade 5.5` | Arrival-glow cooldown in seconds (unrestricted finite nonnegative) |
+| `//bf levelramp 2` | Level-up lead-in time |
+| `//bf autohide 60` / `off` | Idle fade controls |
+| `//bf move` / `lock` / `unlock` | Draggable positioning |
+| `//bf scale 1` | Compact scale baseline (former 0.75 appearance) |
+| `//bf details tnl on` | Toggle additional readouts |
+| `//bf levelsize 15` | Size of level number |
+| `//bf jobbold off` | Unbolded job name; default |
+| `//bf leveldigits text` / `native` | Regular versus native digit rendering |
+
+Aliases: `//bf2` and `//barfiller2`. The original `//barfiller` alias is intentionally **not** claimed by this fork.
+
+The additional commands are documented by `//bf help`. No gameplay animation timings were changed for this rename.
+
+## Known limitations
+
+- EXP is supported; merit, capacity/job and exemplar/master points are future work.
+- An actual Windower/FFXI load test on Franklet is still required. Static and simulated checks cannot prove live rendering or first-load behavior.
+- The module `statics.lua` is a locally bundled stock-compatible adaptation rather than a verbatim upstream file. The original BarFiller background/foreground resources are approximations, and the legacy bar primitives are hidden in BarFiller2's active gauge mode. The genuine moon art is bundled.
+- No GitHub commit or push accompanies this local test ZIP. The known-good Test 12 remains preserved.
+- Loading original BarFiller and BarFiller2 together conflicts over `//bf`.
+
+## Credits and license
+
+Original BarFiller code: **Morath86**. BSD license disclaimer retained in `barfiller2.lua`; the bundled adapted `statics.lua` retains the original BSD-style attribution and disclaimer. Trust-style textures: CyriteGameStudios/Trust. Sprite-derived native digits: FFXI 51.DAT; the stylized gold `Level Up!!` art is not a native DAT asset. Custom design and code: Awake (A) with user testing and direction.
+
+## Cumulative changelog
+
+- **BarFiller2 Complete Install Test 2 (2026-10-16):** Bundled stock-compatible `statics.lua`, original moon image and self-contained hidden legacy background/foreground resources; eliminated migration scripts and first-install dependency; corrected instructions and moved current workflow/testing documentation inside addon directory. BarFiller2 animation modules and custom art unchanged.
+
+- **BarFiller2 rename test 1 (2026-10-15):** Independent addon name/folder/main file, preserved `//bf`, new `//bf2` and `//barfiller2` aliases, corrected lifecycle targets, own data location, non-destructive saved-setting migration, path retargeting for known stock assets, bare-command reveal/short help, fuller colored help, `status`, `show`/`hide`/`auto`. Animation modules and art unchanged from Test 12.
+- **BarFiller Test 12:** Longer 5.5-second gain cooldown, chained gain glow continuity, uncapped finite nonnegative animation-duration controls, approved gold/typography defaults, auto-hide outline fade.
+- **BarFiller Tests 10–11:** Gold-only level-up presentation, level-number sparkles, 2-second level buildup, independent long afterglows, scaling and visibility refinements.
+- **BarFiller Tests 5–9:** Actual FFXI native font/digit artwork experiments, return to crisp type, gold echo effects, trailing cross-sparkle gains, integrated previews.
+- **Earlier prototypes:** Trust-textured blue/gold EXP gauge and controller-friendly drag/scale controls.

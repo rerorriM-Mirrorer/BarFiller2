@@ -1,0 +1,14 @@
+{
+  "source_DAT_basename": "51(1).DAT",
+  "source_DAT_sha256": "04101ec2bfb642ee6d99a9946796c2c3e424fc1a5c45c69a6b8a73ea992d925d",
+  "texture_name": "menu/menu2fon",
+  "source_atlas_sha256": "01e0e7ed9d2c29e685c9f88282259f290d9041bb719ab39607a9c655cf73b375",
+  "source_size": [
+    256,
+    256
+  ],
+  "native_sprites": "Cropped directly from source atlas; only image alpha normalized for legibility",
+  "levelup_native": "Composed from cropped source pixel glyphs; inverted i used for !!",
+  "levelup_gold": "Separate artistically generated mockup, not extracted DAT",
+  "author": "Awake"
+}
