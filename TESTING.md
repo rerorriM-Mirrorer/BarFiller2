@@ -1,6 +1,35 @@
 # TESTING.md — BarFiller2 (cumulative)
 
-## Current Development Status — October 18, 2026 (America/Chicago)
+## Current Development Status — November 5, 2026 (America/Chicago)
+
+- **Repository / branch:** rerorriM-Mirrorer/BarFiller2 / dev/cioara-hardcoded-defaults; main is preserved as the live-tested baseline.
+- **Starting source checkpoint:** main commit 683dbb539ae520b23835c2dba375c6793dd653ff (Complete Install Test 2).
+- **Runtime:** Windower 4 Lua addon; no new dependencies or asset changes.
+- **Most recent user-confirmed live behavior:** Complete Install Test 2 loaded on Franklet (2026-10-16); Test 12 animation feedback previously approved. This candidate has not been tested in FFXI.
+- **Static checks:** Cioara effective layout extracted from the uploaded settings with sanitized numeric-font XML tags; source defaults, migration branches, saved-settings merge and positioning code reviewed. These are source-level checks, NOT in-game load tests.
+- **Outstanding:** Fresh profile load, existing-character override preservation, reload and zoning persistence, 3840×2160 placement, smaller-client clamping and animation smoke test. Independent dev/ctrl-drag-grid is also pending acceptance.
+- **Next:** User live-test the defaults on a fresh profile before considering merge to main.
+
+### Current testing batch — Cioara hardcoded defaults (November 5, 2026)
+
+**Input:** User-uploaded settings(20261105-105950).xml. Effective Cioara layout takes most options from global settings and overrides Scale=0.9, X=3209, Y=2124.9 plus the completed Test 9/11/12 migration markers. The uploaded settings file is not committed. Windower numeric-font nodes needed a sanitized external XML parser.
+
+**Changes:** Fresh-profile defaults now match Cioara's saved layout. The gold skin, hybrid/gold-only level-up, text digits, gain sparkles, 5.5-second gain fade and 60-second auto-hide were already existing code defaults and remain unchanged. Historical migration markers now begin true for brand-new profiles so the old Test 11 one-time scale conversion cannot turn 0.9 into 1.2. Earlier saved profiles with false markers retain their migration behavior. No animation modules, artwork, rendering or clamping paths changed. Legacy hidden image/text defaults stay in statics.lua.
+
+**Testing procedure:**
+1. Back up the existing BarFiller2 data and settings; retain the main-branch known-good source.
+2. With a truly fresh test profile, load //lua l barfiller2 and check //bf status. Expect gold, scale 0.9, gainfade 5.5, autohide 60.
+3. On Cioara's 3840x2160 client, check near X=3209 and Y=2124 (the runtime truncates the saved 2124.9 position). Reload; confirm scale stays 0.9 and the Test 9/11/12 markers are true.
+4. On an existing character profile with custom scale/position, reload and confirm its saved settings are not overwritten.
+5. On a 1280x720 UI, confirm the bar stays on-screen using existing clamping. Test //bf preview gain, //bf preview goldonly, auto-hide, restart, and a zone transition.
+6. Check //bf help and //bf status; confirm the original BarFiller is not simultaneously loaded. Report any in-game errors or visual differences.
+
+**Verification:** Uploaded values inspected and source checked statically. No game client, Windower load, in-game rendering, profile regression or live multibox test occurred for this candidate.
+
+**Publication:** Development-branch commits will be identified by the GitHub delivery handoff, without embedding the final moving head in this file.
+
+---
+## Archived Development Status — October 18, 2026 (America/Chicago)
 
 - **Repository / branch:** `rerorriM-Mirrorer/BarFiller2` / `main`.
 - **Starting source checkpoint:** `BarFiller2_Complete_Install_Test2.zip` (SHA-256 `ed77a256fb3d3457bffa27e7a55d8de8641fd4bab386b28add39401fd86b1813`); code and assets carried forward from the complete package, with documentation updated for this repository.
