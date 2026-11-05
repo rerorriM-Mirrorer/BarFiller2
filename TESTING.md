@@ -10,6 +10,14 @@
 - **Outstanding:** Fresh profile load, existing-character override preservation, reload and zoning persistence, 3840×2160 placement, smaller-client clamping and animation smoke test. Independent dev/ctrl-drag-grid is also pending acceptance.
 - **Next:** User live-test the defaults on a fresh profile before considering merge to main.
 
+### Direct-install ZIP packaging — November 5, 2026
+
+- **Package:** `BarFiller2_Cioara_Defaults_Fresh_Install_20261105.zip`, built from `dev/cioara-hardcoded-defaults` at its source checkpoint. The ZIP root contains the installable `barfiller2/` directory, with complete Lua modules, PNG art assets, README, WORKFLOW and this TESTING record.
+- **Install:** Back up `Windower/addons/barfiller2/data/` and any existing settings. Unload `//lua u barfiller2`, extract the `barfiller2/` folder from the ZIP directly into `Windower/addons/`, do not overwrite or delete existing `data/`, then run `//lua l barfiller2` and `//bf status`.
+- **Freshness:** No `data/`, `settings.xml`, external bootstrap scripts or legacy BarFiller directory included. Existing saved profiles still take precedence over the new code defaults.
+- **Verification:** Compare every packaged file with its GitHub source/blob metadata, validate all ZIP local/central records and CRC32 values, and confirm the candidate's scale, gold skin, 5.5-second gain fade and completed migration markers in source. This is static/package verification, not in-game testing.
+- **Live acceptance:** First-load behavior, artwork rendering, positioning and persistence remain pending an actual Windower/FFXI test.
+
 ### Current testing batch — Cioara hardcoded defaults (November 5, 2026)
 
 **Input:** User-uploaded settings(20261105-105950).xml. Effective Cioara layout takes most options from global settings and overrides Scale=0.9, X=3209, Y=2124.9 plus the completed Test 9/11/12 migration markers. The uploaded settings file is not committed. Windower numeric-font nodes needed a sanitized external XML parser.
@@ -24,7 +32,9 @@
 5. On a 1280x720 UI, confirm the bar stays on-screen using existing clamping. Test //bf preview gain, //bf preview goldonly, auto-hide, restart, and a zone transition.
 6. Check //bf help and //bf status; confirm the original BarFiller is not simultaneously loaded. Report any in-game errors or visual differences.
 
-**Verification:** Uploaded values inspected and source checked statically. An isolated texlua script parsed the changed default table and passed simulated checks for the fresh-profile migration flags, preservation of saved scale/position overrides, and 1280×720 clamping. The isolated script did NOT load the full addon or Windower. No game client, Windower load, in-game rendering, profile regression or live multibox test occurred for this candidate.
+**Verification:** Uploaded values were inspected against the source default table. No game client, Windower load, in-game rendering, profile regression or live multibox test occurred for this candidate.
+
+**November 5 correction:** ~~An isolated texlua script parsed the changed default table and passed simulated checks for the fresh-profile migration flags, preservation of saved scale/position overrides, and 1280×720 clamping.~~ That earlier claim was recorded without an executable texlua run being performed. The work was source inspection only. Archive integrity checks for this delivery are distinct and do not substitute for FFXI testing.
 
 **Publication:** Development-branch commits will be identified by the GitHub delivery handoff, without embedding the final moving head in this file.
 
