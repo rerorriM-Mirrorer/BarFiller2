@@ -30,7 +30,7 @@
 ]]
 _addon.name='BarFiller2'
 _addon.author='Morath86; BarFiller2 additions: Awake'
-_addon.version='0.2.12-bf2-complete1'
+_addon.version='0.2.13-cioara-defaults'
 _addon.commands={'bf','bf2','barfiller2'}
 _addon.language='english'
 
@@ -49,11 +49,16 @@ local LevelArt=require('level_art')
 -- Existing BarFiller preferences can be copied manually when desired; no migration
 -- script or reads/writes to the original BarFiller directory are required.
 defaults.TrustSkin={Color='gold'}
-defaults.TrustLayout={X=-1,Y=20,Width=420,Edit=true,Locked=false,Scale=1,
-    LevelStyle='hybrid',ShowTNL=false,ShowRate=false,LevelDelay=0,GoldLabel=true,GainSparkles=true,LevelDigits='text',Test9DefaultsApplied=false,
+-- Cioara's saved 3840x2160 placement is the fresh-install baseline.
+-- positioning() clamps coordinates for smaller windows. Existing saved
+-- character settings still take precedence over these code defaults.
+defaults.TrustLayout={X=3209,Y=2124.9,Width=420,Edit=true,Locked=false,Scale=0.9,
+    LevelStyle='hybrid',ShowTNL=false,ShowRate=false,LevelDelay=0,GoldLabel=true,GainSparkles=true,LevelDigits='text',Test9DefaultsApplied=true,
     ArrivalFade=5.5,LevelRamp=2,LevelPresentation='goldonly',
     AutoHide=true,HideSeconds=60,JobBold=false,LevelFontSize=15,
-    ScaleProfile='compact',Test11DefaultsApplied=false,Test12DefaultsApplied=false}
+    ScaleProfile='compact',Test11DefaultsApplied=true,Test12DefaultsApplied=true}
+-- Completed markers prevent old one-time migrations from altering a new profile.
+-- Legacy saved profiles with false markers retain their migration behavior.
 settings=config.load(defaults)
 settings.TrustSkin=settings.TrustSkin or {Color='gold'}
 settings.TrustLayout=settings.TrustLayout or {}
