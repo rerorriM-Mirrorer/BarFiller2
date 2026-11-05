@@ -24,7 +24,7 @@
 5. On a 1280x720 UI, confirm the bar stays on-screen using existing clamping. Test //bf preview gain, //bf preview goldonly, auto-hide, restart, and a zone transition.
 6. Check //bf help and //bf status; confirm the original BarFiller is not simultaneously loaded. Report any in-game errors or visual differences.
 
-**Verification:** Uploaded values inspected and source checked statically. No game client, Windower load, in-game rendering, profile regression or live multibox test occurred for this candidate.
+**Verification:** Uploaded values inspected and source checked statically. An isolated texlua script parsed the changed default table and passed simulated checks for the fresh-profile migration flags, preservation of saved scale/position overrides, and 1280×720 clamping. The isolated script did NOT load the full addon or Windower. No game client, Windower load, in-game rendering, profile regression or live multibox test occurred for this candidate.
 
 **Publication:** Development-branch commits will be identified by the GitHub delivery handoff, without embedding the final moving head in this file.
 
