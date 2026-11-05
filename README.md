@@ -1,6 +1,6 @@
 # BarFiller2
 
-**Current repository status:** Complete Install Test 2 (user-confirmed load on Franklet; Test 12 animations previously user-approved). The Ctrl+drag candidate is on `dev/ctrl-drag-grid` awaiting live testing. See [`TESTING.md`](TESTING.md) for detailed verification and history.
+**Current repository status:** `main` remains the Franklet-tested Complete Install Test 2 baseline. Cioara's fresh-install defaults are on `dev/cioara-hardcoded-defaults` pending in-game acceptance; the independent Ctrl+drag candidate remains on `dev/ctrl-drag-grid`. See [`TESTING.md`](TESTING.md).
 
 A self-contained, independently installable Windower fork of BarFiller with animated EXP fills, trailing sparkles, golden level-up echoes, auto-hide, saved positioning, and adjustable timing. Built collaboratively with A, based on original BarFiller by Morath86.
 
@@ -21,6 +21,12 @@ A self-contained, independently installable Windower fork of BarFiller with anim
 
 **What is bundled:** All required Lua modules, native and Trust-style art, the genuine original `moon.png`, and self-contained stock-compatible EXP logic and legacy image resources. The old background and foreground PNGs are lightweight compatible substitutes for two *hidden* legacy primitives; the visible custom gold/blue gauge and its assets are byte-for-byte unchanged from Test 12. Windower's standard Lua libraries (`config`, `files`, `packets`, `texts`, `images`, `chat`) are still provided by Windower itself, not this addon.
 
+## Fresh-install defaults — Cioara preset (November 5, 2026)
+
+New BarFiller2 profiles use Cioara's effective saved layout: gold skin, compact scale **0.9**, width **420**, initial position **X=3209, Y=2124.9** on a 3840×2160 client, gold-only hybrid level-up artwork, text level digits, gain sparkles, 5.5-second arrival fade and 60-second auto-hide. The existing positioning code clamps the coordinates on smaller displays.
+
+These are **defaults**, not forced overrides. Existing character/global settings are left untouched; the code does not overwrite `data/` or `settings.xml`. Fresh profiles start with historical Test 9/11/12 preset migration markers completed so scale 0.9 is not unexpectedly rescaled to 1.2. Existing profiles retain the previous migration behavior.
+
 ## Controls
 
 | Command | Behavior |
@@ -39,7 +45,7 @@ A self-contained, independently installable Windower fork of BarFiller with anim
 | `//bf levelramp 2` | Level-up lead-in time |
 | `//bf autohide 60` / `off` | Idle fade controls |
 | `//bf move` / `lock` / `unlock` | Draggable positioning |
-| `//bf scale 1` | Compact scale baseline (former 0.75 appearance) |
+| `//bf scale 0.9` | Sets compact scale; Cioara-derived fresh-install default |
 | `//bf details tnl on` | Toggle additional readouts |
 | `//bf levelsize 15` | Size of level number |
 | `//bf jobbold off` | Unbolded job name; default |
@@ -52,9 +58,9 @@ The additional commands are documented by `//bf help`. No gameplay animation tim
 ## Known limitations
 
 - EXP is supported; merit, capacity/job and exemplar/master points are future work.
-- An actual Windower/FFXI load test on Franklet is still required. Static and simulated checks cannot prove live rendering or first-load behavior.
+- The new Cioara defaults candidate needs a live first-load test; Franklet previously confirmed the Complete Install Test 2 baseline loads. Static checks cannot prove live rendering.
 - The module `statics.lua` is a locally bundled stock-compatible adaptation rather than a verbatim upstream file. The original BarFiller background/foreground resources are approximations, and the legacy bar primitives are hidden in BarFiller2's active gauge mode. The genuine moon art is bundled.
-- No GitHub commit or push accompanies this local test ZIP. The known-good Test 12 remains preserved.
+- The historical local ZIP predates the GitHub repository; the current untested defaults candidate is tracked on a separate development branch, while `main` remains known-good.
 - Loading original BarFiller and BarFiller2 together conflicts over `//bf`.
 
 ## Credits and license
@@ -62,6 +68,8 @@ The additional commands are documented by `//bf help`. No gameplay animation tim
 Original BarFiller code: **Morath86**. BSD license disclaimer retained in `barfiller2.lua`; the bundled adapted `statics.lua` retains the original BSD-style attribution and disclaimer. Trust-style textures: CyriteGameStudios/Trust. Sprite-derived native digits: FFXI 51.DAT; the stylized gold `Level Up!!` art is not a native DAT asset. Custom design and code: Awake (A) with user testing and direction.
 
 ## Cumulative changelog
+
+- **Cioara hardcoded defaults (2026-11-05, development candidate):** Fresh-install position/scale match Cioara's 4K settings; approved existing gold/animation defaults retained, new-profile migration markers completed, existing saved settings preserved. Pending live testing.
 
 - **BarFiller2 Complete Install Test 2 (2026-10-16):** Bundled stock-compatible `statics.lua`, original moon image and self-contained hidden legacy background/foreground resources; eliminated migration scripts and first-install dependency; corrected instructions and moved current workflow/testing documentation inside addon directory. BarFiller2 animation modules and custom art unchanged.
 
